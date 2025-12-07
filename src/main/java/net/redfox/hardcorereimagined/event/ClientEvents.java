@@ -1,17 +1,13 @@
 package net.redfox.hardcorereimagined.event;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.redfox.hardcorereimagined.HardcoreReimagined;
 import net.redfox.hardcorereimagined.client.TemperatureHudOverlay;
-import net.redfox.hardcorereimagined.food.FoodNerf;
 import net.redfox.hardcorereimagined.food.foodHistory.PlayerFoodHistory;
 
 public class ClientEvents {
