@@ -1,8 +1,8 @@
 package net.redfox.hardcorereimagined.event;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.text.Normalizer;
+import java.util.*;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -38,6 +38,9 @@ import net.redfox.hardcorereimagined.symptom.ModSymptoms;
 import net.redfox.hardcorereimagined.temperature.PlayerTemperature;
 import net.redfox.hardcorereimagined.temperature.PlayerTemperatureProvider;
 import net.redfox.hardcorereimagined.util.config.ConfigValue;
+import net.redfox.hardcorereimagined.util.config.ListConfigValue;
+import net.redfox.hardcorereimagined.util.config.SingleConfigValue;
+import net.redfox.hardcorereimagined.util.config.TagConfigValue;
 
 public class ServerEvents {
   @Mod.EventBusSubscriber(modid = HardcoreReimagined.MOD_ID)
@@ -58,17 +61,19 @@ public class ServerEvents {
     @SubscribeEvent
     public static void onCropGrowth(BlockEvent.CropGrowEvent event) {
       int successChance = 1;
-      successChance *= FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_DIFFICULTY_MULTIPLIER.get(event.getLevel().getDifficulty());
-        for (ConfigValue<Block> configValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
-          if (configValue.is(event.getState().getBlock())) {
-            for (ConfigValue<Biome> biomeConfigValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue).keySet()) {
-              if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
-                successChance *= FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue).get(biomeConfigValue);
-              }
+      boolean inBiome = false;
+      for (ConfigValue<Block> configValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.keySet()) {
+        if (configValue.is(event.getState().getBlock())) {
+          for (ConfigValue<Biome> biomeConfigValue : FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.get(configValue)) {
+            if (biomeConfigValue.is(event.getLevel().getBiome(event.getPos()).get())) {
+              inBiome = true;
             }
           }
+        }
       }
-      if (event.getLevel().getRandom().nextIntBetweenInclusive(1, successChance) != 1) {
+      if (!inBiome) {
+        event.setResult(Event.Result.DENY);
+      } else if (event.getLevel().getRandom().nextIntBetweenInclusive(1, successChance) != 1) {
         event.setResult(Event.Result.DENY);
       }
     }
@@ -185,6 +190,46 @@ public class ServerEvents {
           ModCommonConfigs.BIOME_TEMPERATURES_VALUES.get(),
           FormattedConfigValues.Temperature.BIOME_TEMPERATURES,
           Biome.class);
+      for (String entry : ModCommonConfigs.CROP_GROWTH_BIOME_MULTIPLIERS.get()) {
+        String crop;
+        String biomeList;
+        if (entry.startsWith("[")) {
+          crop = entry.substring(0, entry.indexOf("]")+1);
+          biomeList =  entry.substring(entry.indexOf("]") + 2);
+        } else {
+          crop = entry.substring(0, entry.indexOf(","));
+          biomeList =  entry.substring(entry.indexOf(",") + 1);
+        }
+        List<ConfigValue<Biome>> biomes = new ArrayList<>();
+        for (String biome : biomeList.substring(1, biomeList.length()-1).split(",")) {
+          if (biome.startsWith("[")) {
+            ListConfigValue<Biome> listConfigValue = new ListConfigValue<>(biome.substring(1, biome.length()-1).split(","), Biome.class);
+            if (listConfigValue.isInvalid(Biome.class)) return;
+            biomes.add(listConfigValue);
+          } else if (biome.startsWith("#")) {
+            TagConfigValue<Biome> tagConfigValue = new TagConfigValue<>(biome.substring(1), Biome.class);
+            if (tagConfigValue.isInvalid(Biome.class)) return;
+            biomes.add(tagConfigValue);
+          } else {
+            SingleConfigValue<Biome> singleConfigValue = new SingleConfigValue<>(biome, Biome.class);
+            if (singleConfigValue.isInvalid(Biome.class)) return;
+            biomes.add(singleConfigValue);
+          }
+        }
+        if (crop.startsWith("[")) {
+          ListConfigValue<Block> listConfigValue = new ListConfigValue<>(crop.substring(1, crop.length()-1).split(","), Block.class);
+          if (listConfigValue.isInvalid(Block.class)) return;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(listConfigValue, biomes);
+        } else if (crop.startsWith("#")) {
+          TagConfigValue<Block> tagConfigValue = new TagConfigValue<>(crop.substring(1), Block.class);
+          if (tagConfigValue.isInvalid(Block.class)) return;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(tagConfigValue, biomes);
+        } else {
+          SingleConfigValue<Block> singleConfigValue = new SingleConfigValue<>(crop, Block.class);
+          if (singleConfigValue.isInvalid(Block.class)) return;
+          FormattedConfigValues.EnvironmentNerf.CROP_GROWTH_BIOME_MULTIPLIER.put(singleConfigValue, biomes);
+        }
+      }
     }
   }
 
