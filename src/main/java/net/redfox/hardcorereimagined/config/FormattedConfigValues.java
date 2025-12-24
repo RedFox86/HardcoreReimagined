@@ -13,10 +13,6 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.redfox.hardcorereimagined.HardcoreReimagined;
 import net.redfox.hardcorereimagined.food.FoodCategory;
-import net.redfox.hardcorereimagined.util.config.ConfigValue;
-import net.redfox.hardcorereimagined.util.config.ListConfigValue;
-import net.redfox.hardcorereimagined.util.config.SingleConfigValue;
-import net.redfox.hardcorereimagined.util.config.TagConfigValue;
 import oshi.util.tuples.Pair;
 
 public class FormattedConfigValues {
@@ -28,27 +24,6 @@ public class FormattedConfigValues {
   public static class Temperature {
     public static final BooleanSupplier FLUCTUATE_TEMPERATURE =
         ModCommonConfigs.TEMPERATURE_FLUCTUATION::get;
-
-    public static final BooleanSupplier BIOME_TEMPERATURE_ENABLED =
-        ModCommonConfigs.BIOME_TEMPERATURES_ENABLED::get;
-    public static final Map<ConfigValue<Biome>, Integer> BIOME_TEMPERATURES = new HashMap<>();
-
-    public static final BooleanSupplier INSULATORS_ENABLED =
-        ModCommonConfigs.INSULATORS_ENABLED::get;
-    public static final Map<ConfigValue<Block>, Integer> INSULATOR_TEMPERATURES = new HashMap<>();
-    public static final Supplier<Integer> INSULATORS_RANGE = ModCommonConfigs.INSULATORS_RANGE;
-    public static final BooleanSupplier INSULATORS_DISTINCT =
-        ModCommonConfigs.INSULATORS_DISTINCT::get;
-
-    public static final BooleanSupplier FLUID_TEMPERATURE_ENABLED =
-        ModCommonConfigs.FLUID_TEMPERATURES_ENABLED::get;
-    public static final Map<ConfigValue<Block>, Integer> FLUID_TEMPERATURES = new HashMap<>();
-
-    public static final BooleanSupplier BLOCK_TEMPERATURES_ENABLED =
-        ModCommonConfigs.BLOCK_TEMPERATURES_ENABLED::get;
-    public static final BooleanSupplier BLOCK_TEMPERATURES_NEED_BOOTS =
-        ModCommonConfigs.BLOCK_TEMPERATURES_NEED_BOOTS::get;
-    public static final Map<ConfigValue<Block>, Integer> BLOCK_TEMPERATURES = new HashMap<>();
 
     public static final BooleanSupplier WEATHER_TEMPERATURES_ENABLED =
         ModCommonConfigs.WEATHER_TEMPERATURE_ENABLED::get;
@@ -70,17 +45,10 @@ public class FormattedConfigValues {
     public static final Supplier<Double> UPPER_MULTIPLIER = ModCommonConfigs.UPPER_MULTIPLIER;
     public static final Supplier<Integer> LOWER_ALTITUDE = ModCommonConfigs.LOWER_ALTITUDE;
     public static final Supplier<Double> LOWER_MULTIPLIER = ModCommonConfigs.LOWER_MULTIPLIER;
-
-    public static final BooleanSupplier ARMOR_INSULATIONS_ENABLED =
-        ModCommonConfigs.ARMOR_INSULATORS_ENABLED::get;
-    public static final Map<ConfigValue<Item>, Pair<Integer, Integer>> ARMOR_INSULATIONS =
-        new HashMap<>();
   }
 
   public static class EnvironmentNerf {
     public static final Map<Difficulty, Double> CROP_GROWTH_DIFFICULTY_MULTIPLIER = new HashMap<>();
-    public static final Map<ConfigValue<Block>, List<ConfigValue<Biome>>>
-        CROP_GROWTH_BIOME_MULTIPLIER = new HashMap<>();
   }
 
   public static class FoodNerf {
@@ -89,14 +57,6 @@ public class FormattedConfigValues {
   }
 
   public static void populateConfigValues() {
-    createSingleIntegerConfigValues(
-        ModCommonConfigs.INSULATORS_VALUES.get(), Temperature.INSULATOR_TEMPERATURES, Block.class);
-    createSingleIntegerConfigValues(
-        ModCommonConfigs.FLUID_TEMPERATURES.get(), Temperature.FLUID_TEMPERATURES, Block.class);
-    createSingleIntegerConfigValues(
-        ModCommonConfigs.BLOCK_TEMPERATURES.get(), Temperature.BLOCK_TEMPERATURES, Block.class);
-    createPairIntegerConfigValues(
-        ModCommonConfigs.ARMOR_INSULATORS.get(), Temperature.ARMOR_INSULATIONS, Item.class);
     for (String entry : ModCommonConfigs.FOOD_CATEGORIES.get()) {
       String[] split = entry.split(",");
       FoodNerf.FOOD_CATEGORIES.add(
@@ -139,70 +99,6 @@ public class FormattedConfigValues {
     }
 
     logLoadedSkippedInvalidDuplicates();
-  }
-
-  public static <E> void createSingleIntegerConfigValues(
-      List<String> forgeConfigValue, Map<ConfigValue<E>, Integer> storage, Class<E> clazz) {
-    for (String entry : forgeConfigValue) {
-      if (entry.startsWith("[")) {
-        ListConfigValue<E> configValue = new ListConfigValue<>(getStringArray(entry), clazz);
-        if (configValue.isInvalid(clazz)) {
-          continue;
-        }
-        storage.put(configValue, Integer.parseInt(entry.substring(entry.indexOf("]") + 2)));
-      } else if (entry.startsWith("#")) {
-        TagConfigValue<E> configValue = new TagConfigValue<>(getString(entry.substring(1)), clazz);
-        if (configValue.isInvalid(clazz)) {
-          continue;
-        }
-        storage.put(configValue, Integer.parseInt(entry.substring(entry.indexOf(",") + 1)));
-      } else {
-        SingleConfigValue<E> configValue = new SingleConfigValue<>(getString(entry), clazz);
-        if (configValue.isInvalid(clazz)) {
-          continue;
-        }
-        storage.put(configValue, Integer.parseInt(entry.substring(entry.indexOf(",") + 1)));
-      }
-    }
-  }
-
-  public static <E> void createPairIntegerConfigValues(
-      List<String> forgeConfigValue,
-      Map<ConfigValue<E>, Pair<Integer, Integer>> storage,
-      Class<E> clazz) {
-    for (String entry : forgeConfigValue) {
-      if (entry.startsWith("[")) {
-        String[] ints = entry.substring(entry.indexOf("]") + 2).split(",");
-        ListConfigValue<E> configValue = new ListConfigValue<>(getStringArray(entry), clazz);
-        if (configValue.isInvalid(clazz)) continue;
-        storage.put(configValue, new Pair<>(Integer.parseInt(ints[0]), Integer.parseInt(ints[1])));
-      } else if (entry.startsWith("#")) {
-        String[] ints = entry.substring(entry.indexOf(",") + 1).split(",");
-        TagConfigValue<E> configValue = new TagConfigValue<>(getString(entry.substring(1)), clazz);
-        if (configValue.isInvalid(clazz)) continue;
-        storage.put(configValue, new Pair<>(Integer.parseInt(ints[0]), Integer.parseInt(ints[1])));
-      } else {
-        String[] ints = entry.substring(entry.indexOf(",") + 1).split(",");
-        SingleConfigValue<E> configValue = new SingleConfigValue<>(getString(entry), clazz);
-        if (configValue.isInvalid(clazz)) continue;
-        storage.put(configValue, new Pair<>(Integer.parseInt(ints[0]), Integer.parseInt(ints[1])));
-      }
-    }
-  }
-
-  public static <E> int checkMapForValue(Map<ConfigValue<E>, Integer> storage, E key) {
-    for (ConfigValue<E> configValue : storage.keySet()) {
-      if (configValue.is(key)) return storage.get(configValue);
-    }
-    return 0;
-  }
-
-  public static <E> Pair<Integer, Integer> checkMapForPair(
-      Map<ConfigValue<E>, Pair<Integer, Integer>> storage, E key) {
-    for (ConfigValue<E> configValue : storage.keySet()) {
-      if (configValue.is(key)) return storage.get(configValue);
-    }
-    return new Pair<>(0, 0);
   }
 
   private static String[] getStringArray(String string) {

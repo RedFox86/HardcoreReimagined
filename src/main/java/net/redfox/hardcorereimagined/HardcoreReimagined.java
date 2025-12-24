@@ -16,7 +16,6 @@ import net.redfox.hardcorereimagined.effect.ModEffects;
 import net.redfox.hardcorereimagined.event.AppleSkinEvents;
 import net.redfox.hardcorereimagined.food.FoodNerf;
 import net.redfox.hardcorereimagined.networking.ModPackets;
-import net.redfox.hardcorereimagined.util.config.JsonHelper;
 import org.slf4j.Logger;
 
 @Mod(HardcoreReimagined.MOD_ID)
@@ -31,7 +30,6 @@ public class HardcoreReimagined {
         ModConfig.Type.COMMON, ModCommonConfigs.SPEC, HardcoreReimagined.MOD_ID + "/common.toml");
     context.registerConfig(
         ModConfig.Type.CLIENT, ModClientConfigs.SPEC, HardcoreReimagined.MOD_ID + "/client.toml");
-    JsonHelper.getOrCreateJsonFile("test.json");
 
     ModEffects.register(modEventBus);
 

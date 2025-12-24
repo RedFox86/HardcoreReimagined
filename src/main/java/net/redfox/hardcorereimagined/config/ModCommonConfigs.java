@@ -24,21 +24,6 @@ public class ModCommonConfigs {
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> TEMPERATURE_FLUCTUATION;
 
-  public static final ForgeConfigSpec.ConfigValue<Boolean> BIOME_TEMPERATURES_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> BIOME_TEMPERATURES_VALUES;
-
-  public static final ForgeConfigSpec.ConfigValue<Boolean> INSULATORS_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> INSULATORS_VALUES;
-  public static final ForgeConfigSpec.ConfigValue<Integer> INSULATORS_RANGE;
-  public static final ForgeConfigSpec.ConfigValue<Boolean> INSULATORS_DISTINCT;
-
-  public static final ForgeConfigSpec.ConfigValue<Boolean> FLUID_TEMPERATURES_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> FLUID_TEMPERATURES;
-
-  public static final ForgeConfigSpec.ConfigValue<Boolean> BLOCK_TEMPERATURES_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<Boolean> BLOCK_TEMPERATURES_NEED_BOOTS;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> BLOCK_TEMPERATURES;
-
   public static final ForgeConfigSpec.ConfigValue<Boolean> WEATHER_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> RAIN_TEMPERATURE;
   public static final ForgeConfigSpec.ConfigValue<Integer> SNOW_TEMPERATURE;
@@ -55,9 +40,6 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<Integer> LOWER_ALTITUDE;
   public static final ForgeConfigSpec.ConfigValue<Double> UPPER_MULTIPLIER;
   public static final ForgeConfigSpec.ConfigValue<Double> LOWER_MULTIPLIER;
-
-  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATORS_ENABLED;
-  public static final ForgeConfigSpec.ConfigValue<List<String>> ARMOR_INSULATORS;
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> FOOD_MODIFICATION_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<List<String>> FOOD_CATEGORIES;
@@ -118,170 +100,6 @@ public class ModCommonConfigs {
                 .comment(
                     "If true, the temperature will fluctuate around its goal by a margin of one.")
                 .define("temperatureFluctuation", true);
-        BUILDER.push("biome");
-        {
-          BIOME_TEMPERATURES_ENABLED =
-              BUILDER
-                  .comment("If true, enables temperature fluctuation based on biome.")
-                  .define("biome_temperature_enabled", true);
-
-          BIOME_TEMPERATURES_VALUES =
-              BUILDER
-                  .comment("A Map of all biomes and their temperature values.")
-                  .define(
-                      "biomeTemperature",
-                      new ArrayList<>(
-                          Arrays.asList(
-                              "minecraft:ocean,-20",
-                              "minecraft:deep_ocean,-30",
-                              "minecraft:warm_ocean,20",
-                              "minecraft:lukewarm_ocean,5",
-                              "minecraft:deep_lukewarm_ocean,-5",
-                              "minecraft:cold_ocean,-40",
-                              "minecraft:deep_cold_ocean,-50",
-                              "minecraft:frozen_ocean,-60",
-                              "minecraft:deep_frozen_ocean,-70",
-                              "minecraft:mushroom_fields,0",
-                              "minecraft:jagged_peaks,-80",
-                              "minecraft:frozen_peaks,-100",
-                              "minecraft:stony_peaks,-60",
-                              "minecraft:meadow,-10",
-                              "minecraft:cherry_grove,10",
-                              "minecraft:grove,-50",
-                              "minecraft:windswept_hills,-30",
-                              "minecraft:windswept_gravelly_hills,-30",
-                              "minecraft:windswept_forest,-30",
-                              "minecraft:forest,10",
-                              "minecraft:flower_forest,10",
-                              "minecraft:taiga,-10",
-                              "minecraft:old_growth_pine_taiga,-20",
-                              "minecraft:old_growth_spruce_taiga,-20",
-                              "minecraft:snowy_taiga,-40",
-                              "minecraft:birch_forest,10",
-                              "minecraft:old_growth_birch_forest,10",
-                              "minecraft:dark_forest,40",
-                              "minecraft:pale_garden,-70",
-                              "minecraft:jungle,90",
-                              "minecraft:sparse_jungle,70",
-                              "minecraft:bamboo_jungle,80",
-                              "minecraft:river,-20",
-                              "minecraft:frozen_river,-80",
-                              "minecraft:swamp,60",
-                              "minecraft:mangrove_swamp,90",
-                              "minecraft:beach,30",
-                              "minecraft:snowy_beach,-30",
-                              "minecraft:stony_shore,-20",
-                              "minecraft:plains,0",
-                              "minecraft:sunflower_plains,5",
-                              "minecraft:snowy_plains,-40",
-                              "minecraft:ice_spikes,-70",
-                              "minecraft:desert,120",
-                              "minecraft:savanna,70",
-                              "minecraft:savanna_plateau,70",
-                              "minecraft:windswept_savanna,65",
-                              "minecraft:badlands,140",
-                              "minecraft:wooded_badlands,130",
-                              "minecraft:eroded_badlands,150",
-                              "minecraft:deep_dark,-150",
-                              "minecraft:dripstone_caves,-30",
-                              "minecraft:lush_caves,5",
-                              "minecraft:the_void,0",
-                              "minecraft:nether_wastes,200",
-                              "minecraft:soul_sand_valley,190",
-                              "minecraft:crimson_forest,220",
-                              "minecraft:warped_forest,80",
-                              "minecraft:basalt_deltas,230",
-                              "minecraft:the_end,-400",
-                              "minecraft:small_end_islands,-400",
-                              "minecraft:end_midlands,-400",
-                              "minecraft:end_highlands,-400",
-                              "minecraft:end_barrens,-400")));
-        }
-        BUILDER.pop();
-        BUILDER.push("block_insulators");
-        {
-          INSULATORS_ENABLED =
-              BUILDER
-                  .comment(
-                      "If true, enables temperature fluctuation based on the surrounding blocks")
-                  .define("insulators_enabled", true);
-          INSULATORS_VALUES =
-              BUILDER
-                  .comment("A Map of all the blocks that will provide a change in temperature")
-                  .define(
-                      "insulators",
-                      new ArrayList<>(
-                          Arrays.asList(
-                              "[minecraft:torch,minecraft:wall_torch],15",
-                              "minecraft:fire,20",
-                              "minecraft:lantern,25",
-                              "minecraft:campfire,30",
-                              "minecraft:lava,60",
-                              "minecraft:magma_block,30",
-                              "#minecraft:candles,5",
-                              "minecraft:soul_campfire,-30",
-                              "[minecraft:soul_torch,minecraft:soul_wall_torch],-15",
-                              "minecraft:soul_lantern,-25")));
-          INSULATORS_RANGE =
-              BUILDER
-                  .comment("The range that the game will check for insulating blocks")
-                  .defineInRange("insulators_range", 5, 1, Integer.MAX_VALUE);
-          INSULATORS_DISTINCT =
-              BUILDER
-                  .comment("If true, the game will only count each block once in the check.")
-                  .comment(
-                      "If false, the game will sum the values of all of the insulators inside the range.")
-                  .comment(
-                      "Note that enabling this may result in a small performance decrease and can also cause some HUGE temperature spikes (for example if you're standing next to a lava pool, each one of those lava blocks will be counted individually.")
-                  .define("insulators_distinct", true);
-        }
-        BUILDER.pop();
-        BUILDER.push("fluids");
-        {
-          FLUID_TEMPERATURES_ENABLED =
-              BUILDER
-                  .comment(
-                      "If true, enables temperature fluctuation based on the fluid you are standing in")
-                  .define("fluid_temperatures_enabled", true);
-          FLUID_TEMPERATURES =
-              BUILDER
-                  .comment(
-                      "A Map of all the blocks that will change your temperature by standing in them")
-                  .define(
-                      "fluidTemperature",
-                      new ArrayList<>(
-                          Arrays.asList(
-                              "minecraft:water,-30",
-                              "minecraft:powder_snow,-100",
-                              "minecraft:lava,100")));
-        }
-        BUILDER.pop();
-        BUILDER.push("block_temperatures");
-        {
-          BLOCK_TEMPERATURES_ENABLED =
-              BUILDER
-                  .comment(
-                      "If true, enables temperature fluctuation based on the block you're standing on.")
-                  .define("block_temperatures_enabled", true);
-          BLOCK_TEMPERATURES_NEED_BOOTS =
-              BUILDER
-                  .comment(
-                      "If true, block temperatures will only affect you when you are not wearing boots.")
-                  .define("block_temperatures_need_boots", true);
-          BLOCK_TEMPERATURES =
-              BUILDER
-                  .comment(
-                      "A Map of all the blocks that will change your temperature by standing on top of them while not wearing boots")
-                  .define(
-                      "walkingOnTop",
-                      new ArrayList<>(
-                          Arrays.asList(
-                              "minecraft:blue_ice,-60",
-                              "minecraft:packed_ice,-40",
-                              "minecraft:ice,-20",
-                              "minecraft:snow_block,-15")));
-        }
-        BUILDER.pop();
         BUILDER.push("weather");
         {
           WEATHER_TEMPERATURE_ENABLED =
@@ -364,47 +182,6 @@ public class ModCommonConfigs {
                   .defineInRange("lower_multiplier", 5, 1, 128d);
         }
         BUILDER.pop();
-        BUILDER.push("armor");
-        {
-          ARMOR_INSULATORS_ENABLED =
-              BUILDER
-                  .comment(
-                      "If true, gives the player an insulation value based on the armor they're wearing.")
-                  .comment("Insulation will keep your temperature closer to zero no matter what.")
-                  .define("armorInsulatorsEnabled", true);
-          ARMOR_INSULATORS =
-              BUILDER
-                  .comment("A Map of all the armor pieces that give insulation while wearing them")
-                  .define(
-                      "armor",
-                      new ArrayList<>(
-                          Arrays.asList(
-                              "minecraft:leather_boots,2,10",
-                              "minecraft:leather_leggings,6,30",
-                              "minecraft:leather_chestplate,8,40",
-                              "minecraft:leather_helmet,4,20",
-                              "minecraft:chainmail_boots,30,0",
-                              "minecraft:chainmail_leggings,50,0",
-                              "minecraft:chainmail_chestplate,60,0",
-                              "minecraft:chainmail_helmet,40,0",
-                              "minecraft:iron_boots,-10,-10",
-                              "minecraft:iron_leggings,-30,-30",
-                              "minecraft:iron_chestplate,-40,-40",
-                              "minecraft:iron_helmet,-20,-20",
-                              "minecraft:gold_boots,10,10",
-                              "minecraft:gold_leggings,30,30",
-                              "minecraft:gold_chestplate,40,40",
-                              "minecraft:gold_helmet,20,20",
-                              "minecraft:diamond_boots,-20,-20",
-                              "minecraft:diamond_leggings,-40,-40",
-                              "minecraft:diamond_chestplate,-50,-50",
-                              "minecraft:diamond_helmet,-30,-30",
-                              "minecraft:netherite_boots,40,-40",
-                              "minecraft:netherite_leggings,60,-60",
-                              "minecraft:netherite_chestplate,70,-70",
-                              "minecraft:netherite_helmet,50,-50")));
-        }
-        BUILDER.pop();
       }
       BUILDER.pop();
       BUILDER.push("environment_nerf");
@@ -430,8 +207,7 @@ public class ModCommonConfigs {
                               "minecraft:cactus,[minecraft:desert,minecraft:badlands,minecraft:eroded_badlands]",
                               "minecraft:kelp,[minecraft:ocean,minecraft:deep_ocean,minecraft:warm_ocean,minecraft:lukewarm_ocean,minecraft:deep_lukewarm_ocean]",
                               "minecraft:cave_vines,minecraft:lush_caves",
-                              "minecraft:nether_wart,#minecraft:is_nether"
-                          )));
+                              "minecraft:nether_wart,#minecraft:is_nether")));
         }
         BUILDER.pop();
         BABY_GROWTH_MODIFIERS =
