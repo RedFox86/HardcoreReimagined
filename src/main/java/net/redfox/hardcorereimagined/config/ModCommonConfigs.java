@@ -28,6 +28,7 @@ public class ModCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<Boolean> BLOCK_INSULATOR_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Boolean> ON_TOP_BLOCK_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Boolean> INSIDE_BLOCK_TEMPERATURE_ENABLED;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATOR_TEMPERATURE_ENABLED;
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> WEATHER_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> RAIN_TEMPERATURE;
@@ -39,8 +40,6 @@ public class ModCommonConfigs {
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> FIRE_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> FIRE_TEMPERATURE;
-
-  public static final ForgeConfigSpec.ConfigValue<Boolean> ARMOR_INSULATOR_TEMPERATURE_ENABLED;
 
   public static final ForgeConfigSpec.ConfigValue<Boolean> ALTITUDE_TEMPERATURE_ENABLED;
   public static final ForgeConfigSpec.ConfigValue<Integer> UPPER_ALTITUDE;

@@ -263,7 +263,7 @@ public class PlayerTemperature {
     }
 
     // Rain / snow / thunder
-    if (WEATHER_TEMPERATURES_ENABLED.getAsBoolean()) {
+    if (ModCommonConfigs.WEATHER_TEMPERATURE_ENABLED.get()) {
       if (level.isRainingAt(player.blockPosition())) {
         goalTemperature += RAIN_TEMPERATURE.get();
       }
@@ -275,7 +275,7 @@ public class PlayerTemperature {
     }
 
     // Day or night
-    if (TIME_TEMPERATURE_ENABLED.getAsBoolean()) {
+    if (ModCommonConfigs.TIME_TEMPERATURE_ENABLED.get()) {
       if (level.isDay() && level.dimension() == Level.OVERWORLD) {
         goalTemperature += DAY_TEMPERATURE.get();
       } else {
@@ -284,12 +284,12 @@ public class PlayerTemperature {
     }
     // On fire
 
-    if (FIRE_TEMPERATURE_ENABLED.getAsBoolean() && player.getRemainingFireTicks() > 0) {
+    if (ModCommonConfigs.FIRE_TEMPERATURE_ENABLED.get() && player.getRemainingFireTicks() > 0) {
       goalTemperature += FIRE_TEMPERATURE.get();
     }
 
     // Altitude
-    if (ALTITUDE_TEMPERATURE_ENABLED.getAsBoolean()) {
+    if (ModCommonConfigs.ALTITUDE_TEMPERATURE_ENABLED.get()) {
       if (player.getY() < LOWER_ALTITUDE.get()) {
         goalTemperature -=
             MathHelper.roundToOneDecimal(
@@ -301,40 +301,42 @@ public class PlayerTemperature {
                 Math.abs(((UPPER_ALTITUDE.get() - player.getY()) / UPPER_MULTIPLIER.get())));
       }
     }
-    int heatResistance = 0;
-    int coldResistance = 0;
+    if (ModCommonConfigs.ARMOR_INSULATOR_TEMPERATURE_ENABLED.get()) {
+      int heatResistance = 0;
+      int coldResistance = 0;
 
-    for (ItemStack i : player.getArmorSlots()) {
-      if (!CACHED_ARMOR_INSULATIONS.containsKey(i.getItem())) {
-        JSON_ARMOR_INSULATIONS.asList().stream()
-            .filter(
-                value ->
-                    value
-                        .getAsJsonObject()
-                        .get("item")
-                        .getAsString()
-                        .equals(i.getItemHolder().unwrapKey().get().location().toString()))
-            .findFirst()
-            .ifPresent(
-                value ->
-                    CACHED_ARMOR_INSULATIONS.put(
-                        i.getItem(),
-                        new Pair<>(
-                            value.getAsJsonObject().get("heat_resistance").getAsDouble(),
-                            value.getAsJsonObject().get("cold_resistance").getAsDouble())));
-      }
+      for (ItemStack i : player.getArmorSlots()) {
+        if (!CACHED_ARMOR_INSULATIONS.containsKey(i.getItem())) {
+          JSON_ARMOR_INSULATIONS.asList().stream()
+              .filter(
+                  value ->
+                      value
+                          .getAsJsonObject()
+                          .get("item")
+                          .getAsString()
+                          .equals(i.getItemHolder().unwrapKey().get().location().toString()))
+              .findFirst()
+              .ifPresent(
+                  value ->
+                      CACHED_ARMOR_INSULATIONS.put(
+                          i.getItem(),
+                          new Pair<>(
+                              value.getAsJsonObject().get("heat_resistance").getAsDouble(),
+                              value.getAsJsonObject().get("cold_resistance").getAsDouble())));
+        }
 
-      Pair<Double, Double> pair =
-          CACHED_ARMOR_INSULATIONS.getOrDefault(i.getItem(), new Pair<>(0D, 0D));
-      heatResistance += pair.getA();
-      coldResistance += pair.getB();
+        Pair<Double, Double> pair =
+            CACHED_ARMOR_INSULATIONS.getOrDefault(i.getItem(), new Pair<>(0D, 0D));
+        heatResistance += pair.getA();
+        coldResistance += pair.getB();
 
-      if (goalTemperature < 0) {
-        goalTemperature += coldResistance;
-        if (goalTemperature > 0) goalTemperature = 0;
-      } else if (goalTemperature > 0) {
-        goalTemperature -= heatResistance;
-        if (goalTemperature < 0) goalTemperature = 0;
+        if (goalTemperature < 0) {
+          goalTemperature += coldResistance;
+          if (goalTemperature > 0) goalTemperature = 0;
+        } else if (goalTemperature > 0) {
+          goalTemperature -= heatResistance;
+          if (goalTemperature < 0) goalTemperature = 0;
+        }
       }
     }
 
